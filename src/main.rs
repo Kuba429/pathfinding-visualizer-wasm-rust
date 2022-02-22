@@ -1,6 +1,7 @@
 #[macro_use]
 extern crate stdweb;
 mod canvas;
+mod cell;
 mod color;
 mod grid;
 use color::Color;
