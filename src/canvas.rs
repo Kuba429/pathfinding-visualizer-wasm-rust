@@ -23,7 +23,7 @@ impl Canvas {
             self._element.height() as f64,
         )
     }
-    pub fn draw(&self, x: f64, y: f64, width: f64, height: f64, color: String) {
+    pub fn draw(&self, x: f64, y: f64, width: f64, height: f64, color: &String) {
         self.ctx.set_fill_style_color(&color);
         self.ctx.fill_rect(x, y, width, height);
     }
