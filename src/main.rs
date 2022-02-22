@@ -4,6 +4,7 @@ mod canvas;
 mod cell;
 mod color;
 mod grid;
+mod position;
 use color::Color;
 use grid::Grid;
 fn main() {

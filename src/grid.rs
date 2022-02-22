@@ -1,18 +1,19 @@
+use stdweb::traits::*;
 use stdweb::unstable::TryInto;
 use stdweb::web::document;
-use stdweb::{traits::*, Value};
 
 use crate::canvas::Canvas;
 use crate::cell::Cell;
 use crate::color::Color;
-use crate::Color::{BLANK, GRID};
+use crate::position::Position;
+use crate::Color::{BLANK, GRID, START, TARGET};
 pub struct Grid<'a> {
     canvas: &'a Canvas,
     rows: i32,
     cell_size: f64,
     grid: Vec<Vec<Cell>>,
-    // start: Cell,
-    // target: Cell,
+    start: Position,
+    target: Position,
     // open_set: Vec<Cell>,
     // closed_set: Vec<Cell>,
     // allow_diagonals: bool,
@@ -47,17 +48,24 @@ impl<'a> Grid<'a> {
             .unwrap();
         let rows: i32 = grid_size_range.raw_value().parse().unwrap();
         let cell_size: f64 = canvas._element.width() as f64 / rows as f64;
-        let grid = Self::setup_grid(&rows);
+        let mut grid = Self::setup_grid(&rows);
+        let start = Position::new(0, 0);
+        let target = Position::new(grid.len() - 1, grid.len() - 1);
+        grid[start.x][start.y].color = Color::get(START);
+        grid[target.x][target.y].color = Color::get(TARGET);
+
         Self {
             canvas,
             rows,
             grid,
             cell_size,
+            start,
+            target,
         }
     }
     pub fn setup_grid(rows: &i32) -> Vec<Vec<Cell>> {
         let mut grid = Vec::new();
-        for i in 0..=*rows {
+        for i in 0..*rows {
             grid.push(Vec::new());
             for j in 0..=*rows {
                 grid[(i) as usize].push(Cell::new(i, j, Color::get(BLANK)));
