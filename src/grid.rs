@@ -11,7 +11,7 @@ pub struct Grid<'a> {
     canvas: &'a Canvas,
     rows: i32,
     cell_size: f64,
-    grid: Vec<Vec<Cell>>,
+    pub grid: Vec<Vec<Cell>>,
     start: Position,
     target: Position,
     // open_set: Vec<Cell>,
@@ -22,8 +22,16 @@ pub struct Grid<'a> {
 
 impl Grid<'_> {
     //clear the canvas
-    pub fn draw(&self) {
+    pub fn draw(&mut self) {
         self.canvas.clear(&Color::get(GRID));
+
+        //testing get_neighbors on Cell
+        let ns = self.grid[5][self.grid.len() - 1].get_neighbors(&self);
+        for n in ns {
+            self.grid[n.x][n.y].color = Color::get(GRID);
+        }
+        //end of testing
+
         //draw cells
         for j in &self.grid {
             for i in j {

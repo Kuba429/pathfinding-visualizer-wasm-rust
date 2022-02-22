@@ -10,6 +10,6 @@ use grid::Grid;
 fn main() {
     stdweb::initialize();
     let canvas = canvas::Canvas::new();
-    let grid = Grid::new(&canvas);
+    let mut grid = Grid::new(&canvas);
     grid.draw();
 }

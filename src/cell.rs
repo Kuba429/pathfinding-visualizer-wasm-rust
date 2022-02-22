@@ -1,3 +1,6 @@
+use crate::color::Color;
+use crate::{grid::Grid, position::Position};
+use Color::GRID;
 pub struct Cell {
     pub x: i32,
     pub y: i32,
@@ -6,6 +9,35 @@ pub struct Cell {
     pub color: String,
     pub previous: Option<Box<Cell>>,
 }
+
+impl Cell {
+    pub fn get_neighbors(&self, grid: &Grid) -> Vec<Position> {
+        let x = self.x as usize;
+        let y = self.y as usize;
+        let mut neighbors: Vec<Position> = Vec::new();
+        let mut potential_neighbors = Vec::new();
+        if x > 0 {
+            potential_neighbors.push(Position::new(x - 1, y));
+        }
+        if x < grid.grid.len() - 1 {
+            potential_neighbors.push(Position::new(x + 1, y))
+        }
+        if y > 0 {
+            potential_neighbors.push(Position::new(x, y - 1))
+        }
+        if y < grid.grid.len() - 1 {
+            potential_neighbors.push(Position::new(x, y + 1))
+        };
+
+        for i in potential_neighbors {
+            if !grid.grid[i.x][i.y].is_wall {
+                neighbors.push(i);
+            }
+        }
+        return neighbors;
+    }
+}
+
 impl Cell {
     pub fn new(x: i32, y: i32, color: String) -> Self {
         Self {
