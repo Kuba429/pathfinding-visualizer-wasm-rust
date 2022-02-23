@@ -1,6 +1,6 @@
 use crate::color::Color;
+use crate::color::Color::{BLANK, GRID};
 use crate::{grid::Grid, position::Position};
-use Color::GRID;
 pub struct Cell {
     pub x: i32,
     pub y: i32,
@@ -11,6 +11,14 @@ pub struct Cell {
 }
 
 impl Cell {
+    pub fn make_wall(&mut self) {
+        self.is_wall = true;
+        self.color = Color::get(GRID);
+    }
+    pub fn make_not_wall(&mut self) {
+        self.is_wall = false;
+        self.color = Color::get(BLANK);
+    }
     pub fn get_neighbors(&self, grid: &Grid) -> Vec<Position> {
         let x = self.x as usize;
         let y = self.y as usize;
