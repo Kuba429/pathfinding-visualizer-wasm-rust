@@ -1,26 +1,26 @@
 use stdweb::traits::*;
 use stdweb::unstable::TryInto;
-use stdweb::web::document;
+use stdweb::web::{document, html_element};
 
 use crate::canvas::Canvas;
 use crate::cell::Cell;
 use crate::color::Color;
 use crate::position::Position;
 use crate::Color::{BLANK, GRID, START, TARGET};
-pub struct Grid<'a> {
-    canvas: &'a Canvas,
+pub struct Grid {
+    pub canvas: Canvas,
     rows: i32,
-    cell_size: f64,
+    pub cell_size: f64,
     pub grid: Vec<Vec<Cell>>,
     start: Position,
     target: Position,
     // open_set: Vec<Cell>,
     // closed_set: Vec<Cell>,
     // allow_diagonals: bool,
-    // can_modify: bool,
+    pub can_modify: bool,
 }
 
-impl Grid<'_> {
+impl Grid {
     //clear the canvas
     pub fn draw(&mut self) {
         self.canvas.clear(&Color::get(GRID));
@@ -46,8 +46,8 @@ impl Grid<'_> {
         }
     }
 }
-impl<'a> Grid<'a> {
-    pub fn new(canvas: &'a Canvas) -> Self {
+impl Grid {
+    pub fn new() -> Self {
         let grid_size_range: stdweb::web::html_element::InputElement = document()
             .query_selector("#gridSizeRange")
             .unwrap()
@@ -55,6 +55,7 @@ impl<'a> Grid<'a> {
             .try_into()
             .unwrap();
         let rows: i32 = grid_size_range.raw_value().parse().unwrap();
+        let canvas = Canvas::new();
         let cell_size: f64 = canvas._element.width() as f64 / rows as f64;
         let mut grid = Self::setup_grid(&rows);
         let start = Position::new(0, 0);
@@ -69,6 +70,7 @@ impl<'a> Grid<'a> {
             cell_size,
             start,
             target,
+            can_modify: true,
         }
     }
     pub fn setup_grid(rows: &i32) -> Vec<Vec<Cell>> {
