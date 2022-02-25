@@ -25,13 +25,9 @@ impl Grid {
     pub fn draw(&mut self) {
         self.canvas.clear(&Color::get(GRID));
 
-        //testing get_neighbors on Cell
-        let ns = self.grid[5][self.grid.len() - 1].get_neighbors(&self);
-        for n in ns {
-            self.grid[n.x][n.y].color = Color::get(GRID);
-        }
-        //end of testing
-
+        //set start and targets colors
+        self.grid[self.start.x][self.start.y].color = Color::get(START);
+        self.grid[self.target.x][self.target.y].color = Color::get(TARGET);
         //draw cells
         for j in &self.grid {
             for i in j {
@@ -44,6 +40,9 @@ impl Grid {
                 )
             }
         }
+        // reset start and targets colors
+        self.grid[self.start.x][self.start.y].color = Color::get(BLANK);
+        self.grid[self.target.x][self.target.y].color = Color::get(BLANK);
     }
 }
 impl Grid {
@@ -60,8 +59,6 @@ impl Grid {
         let mut grid = Self::setup_grid(&rows);
         let start = Position::new(0, 0);
         let target = Position::new(grid.len() - 1, grid.len() - 1);
-        grid[start.x][start.y].color = Color::get(START);
-        grid[target.x][target.y].color = Color::get(TARGET);
 
         Self {
             canvas,
