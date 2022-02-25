@@ -9,7 +9,7 @@ pub struct Cell {
     pub h: i32,
     pub is_wall: bool,
     pub color: String,
-    pub previous: Option<Box<Cell>>,
+    pub previous: Option<Position>,
 }
 
 impl Cell {

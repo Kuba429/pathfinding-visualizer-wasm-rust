@@ -1,22 +1,94 @@
+use crate::color::Color;
 use crate::{cell::Cell, grid::Grid, position::Position};
-
+use std::cell::RefCell;
+use std::rc::Rc;
+use stdweb::web::window;
+use Color::{CLOSED_SET, OPEN_SET, PATH};
+// use color::CLOSED_SET;
 pub fn tick(grid: &mut Grid) {
-    let lowest = 0;
-    // for i in 0..grid.open_set.len() {
-    //     if grid.open_set[i] <
-    // }
+    let mut lowest = 0;
+    let mut lowest_pos = grid.open_set[lowest];
+    for i in 0..grid.open_set.len() {
+        let item = grid.open_set[i];
+        if grid.grid[item.x][item.y].f() < grid.grid[lowest_pos.x][lowest_pos.y].f() {
+            lowest = i;
+            lowest_pos = grid.open_set[lowest];
+        }
+    }
+
+    if lowest_pos.x == grid.target.x && lowest_pos.y == grid.target.y {
+        recreate_path(Some(grid.target), grid);
+        grid.solved = true;
+    };
+    let current = grid.open_set.remove(lowest);
+    grid.closed_set.push(current);
+
+    if current.x != grid.start.x || current.y != grid.start.y {
+        grid.grid[current.x][current.y].color = Color::get(CLOSED_SET);
+    }
+    let current_neighbors = grid.grid[current.x][current.y].get_neighbors(grid);
+    for n in current_neighbors {
+        if !(grid.closed_set.contains(&n)) {
+            let temp_g = grid.grid[current.x][current.y].g + get_distance(&current, &n);
+            if grid.open_set.contains(&n) {
+                if temp_g < grid.grid[n.x][n.y].g {
+                    grid.grid[n.x][n.y].g = temp_g;
+                    grid.grid[n.x][n.y].previous = Some(current);
+                }
+            } else {
+                grid.grid[n.x][n.y].g = temp_g;
+                grid.grid[n.x][n.y].previous = Some(current);
+                grid.open_set.push(n);
+                if n.x != grid.target.x && n.y != grid.target.y {
+                    grid.grid[n.x][n.y].color = Color::get(OPEN_SET);
+                }
+            }
+        }
+    }
 
     grid.draw();
+    if grid.open_set.len() < 1 {
+        grid.solved = true;
+    }
 }
-pub fn solve(grid: &mut Grid) {
-    grid.open_set.push(grid.start);
+pub fn solve(grid_ref: Rc<RefCell<Grid>>) {
+    let mut grid = grid_ref.borrow_mut();
+    let start_point = grid.start;
+    grid.open_set.push(start_point);
+    set_all_h_scores(&mut grid);
+
+    main_loop(grid_ref.clone(), grid.solved);
+}
+pub fn main_loop(grid_ref: Rc<RefCell<Grid>>, solved: bool) {
+    if solved {
+        return;
+    }
+    stdweb::web::set_timeout(
+        move || {
+            let grid_ref_clone = grid_ref.clone();
+            let mut grid = grid_ref_clone.borrow_mut();
+            tick(&mut grid);
+            main_loop(grid_ref, grid.solved)
+        },
+        1,
+    );
+}
+
+fn recreate_path(previous: Option<Position>, grid: &mut Grid) {
+    match previous {
+        Some(x) => {
+            grid.grid[x.x][x.y].color = Color::get(PATH);
+            recreate_path(grid.grid[x.x][x.y].previous, grid);
+        }
+        None => return,
+    }
+}
+
+pub fn set_all_h_scores(grid: &mut Grid) {
     for row in &mut grid.grid {
         for cell in row {
             cell.set_h(&grid.target);
         }
-    }
-    while grid.open_set.len() > 0 {
-        tick(grid);
     }
 }
 
