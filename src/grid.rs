@@ -44,6 +44,14 @@ impl Grid {
         self.grid[self.start.x][self.start.y].color = Color::get(BLANK);
         self.grid[self.target.x][self.target.y].color = Color::get(BLANK);
     }
+    pub fn make_new_start(&mut self, x: usize, y: usize) {
+        self.start = Position::new(x, y);
+        self.grid[x][y].make_not_wall();
+    }
+    pub fn make_new_target(&mut self, x: usize, y: usize) {
+        self.target = Position::new(x, y);
+        self.grid[x][y].make_not_wall();
+    }
 }
 impl Grid {
     pub fn new() -> Self {
