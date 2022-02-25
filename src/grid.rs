@@ -32,10 +32,10 @@ impl Grid {
         for j in &self.grid {
             for i in j {
                 self.canvas.draw(
-                    (i.x as f64 * self.cell_size) + 1.0,
-                    (i.y as f64 * self.cell_size) + 1.0,
-                    self.cell_size - 2.0,
-                    self.cell_size - 2.0,
+                    (i.x as f64 * self.cell_size) + 0.5,
+                    (i.y as f64 * self.cell_size) + 0.5,
+                    self.cell_size - 1.0,
+                    self.cell_size - 1.0,
                     &i.color,
                 )
             }
