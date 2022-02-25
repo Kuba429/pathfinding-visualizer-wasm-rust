@@ -56,7 +56,7 @@ impl Grid {
             .unwrap();
         let rows: i32 = grid_size_range.raw_value().parse().unwrap();
         let canvas = Canvas::new();
-        let cell_size: f64 = canvas._element.width() as f64 / rows as f64;
+        let cell_size: f64 = canvas.element.width() as f64 / rows as f64;
         let mut grid = Self::setup_grid(&rows);
         let start = Position::new(0, 0);
         let target = Position::new(grid.len() - 1, grid.len() - 1);
