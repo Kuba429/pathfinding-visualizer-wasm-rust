@@ -1,8 +1,7 @@
 use crate::color::Color;
-use crate::{cell::Cell, grid::Grid, position::Position};
+use crate::{grid::Grid, position::Position};
 use std::cell::RefCell;
 use std::rc::Rc;
-use stdweb::web::window;
 use Color::{CLOSED_SET, OPEN_SET, PATH};
 // use color::CLOSED_SET;
 pub fn tick(grid: &mut Grid) {
@@ -64,29 +63,18 @@ pub fn solve(grid_ref: Rc<RefCell<Grid>>) {
     let start_point = grid.start;
     grid.open_set.push(start_point);
     set_all_h_scores(&mut grid);
-
-    main_loop(grid_ref.clone(), grid.solved);
+    main_loop(grid_ref.clone());
 }
-pub fn main_loop(grid_ref: Rc<RefCell<Grid>>, solved: bool) {
+pub fn main_loop(grid_ref: Rc<RefCell<Grid>>) {
     stdweb::web::set_timeout(
         move || {
             let mut grid = grid_ref.borrow_mut();
             tick(&mut grid);
-            main_loop(grid_ref.clone(), grid.solved)
+            main_loop(grid_ref.clone())
         },
         1,
     );
 }
-
-// fn recreate_path(previous: Option<Position>, grid: &mut Grid) {
-//     match previous {
-//         Some(x) => {
-//             grid.grid[x.x][x.y].color = Color::get(PATH);
-//             recreate_path(grid.grid[x.x][x.y].previous, grid);
-//         }
-//         None => return,
-//     }
-// }
 
 pub fn set_all_h_scores(grid: &mut Grid) {
     for row in &mut grid.grid {

@@ -15,17 +15,16 @@ use stdweb::web::event::ClickEvent;
 use stdweb::web::{document, FormData, FormDataEntry, IEventTarget, IParentNode};
 fn main() {
     stdweb::initialize();
-    let canvas = canvas::Canvas::new();
     let grid_ref = Rc::new(RefCell::new(Grid::new()));
     grid_ref.borrow_mut().draw();
 
-    set_onclick(grid_ref.clone());
-    start_listener(grid_ref.clone());
+    set_canvas_onclick(grid_ref.clone());
+    set_start_button_onclick(grid_ref.clone());
 }
-pub fn start_listener(grid_ref: Rc<RefCell<grid::Grid>>) {
+pub fn set_start_button_onclick(grid_ref: Rc<RefCell<grid::Grid>>) {
     let start_button = document().query_selector("#startButton").unwrap().unwrap();
     start_button.add_event_listener({
-        move |e: ClickEvent| {
+        move |_e: ClickEvent| {
             let grid = grid_ref.clone();
             if !grid.borrow_mut().can_modify {
                 return;
@@ -35,7 +34,7 @@ pub fn start_listener(grid_ref: Rc<RefCell<grid::Grid>>) {
     });
 }
 
-pub fn set_onclick(grid_ref: Rc<RefCell<grid::Grid>>) {
+pub fn set_canvas_onclick(grid_ref: Rc<RefCell<grid::Grid>>) {
     let canvas = document().query_selector("#canvas").unwrap().unwrap();
     canvas.add_event_listener({
         move |e: ClickEvent| {
@@ -47,16 +46,16 @@ pub fn set_onclick(grid_ref: Rc<RefCell<grid::Grid>>) {
             let y = (e.offset_y() / cell_size) as usize;
             let object = form_data.get("object").unwrap();
             // all FormDataEntries
-            let startPoint = FormDataEntry::String("startPoint".to_string());
+            let start_point = FormDataEntry::String("startPoint".to_string());
             let destination = FormDataEntry::String("destination".to_string());
             let wall = FormDataEntry::String("wall".to_string());
-            let eraseWall = FormDataEntry::String("eraseWall".to_string());
+            let erase_wall = FormDataEntry::String("eraseWall".to_string());
 
             if object == wall {
                 grid.grid[x][y].make_wall();
-            } else if object == eraseWall {
+            } else if object == erase_wall {
                 grid.grid[x][y].make_not_wall();
-            } else if object == startPoint {
+            } else if object == start_point {
                 grid.make_new_start(x, y);
             } else if object == destination {
                 grid.make_new_target(x, y);
