@@ -6,6 +6,19 @@ use stdweb::web::window;
 use Color::{CLOSED_SET, OPEN_SET, PATH};
 // use color::CLOSED_SET;
 pub fn tick(grid: &mut Grid) {
+    grid.draw();
+    if grid.solved {
+        let item = grid.next_to_show;
+        match item {
+            Some(c) => {
+                grid.grid[c.x][c.y].color = Color::get(PATH);
+                grid.draw();
+                grid.next_to_show = grid.grid[c.x][c.y].previous;
+            }
+            None => return,
+        }
+        return;
+    }
     let mut lowest = 0;
     let mut lowest_pos = grid.open_set[lowest];
     for i in 0..grid.open_set.len() {
@@ -17,7 +30,7 @@ pub fn tick(grid: &mut Grid) {
     }
 
     if lowest_pos.x == grid.target.x && lowest_pos.y == grid.target.y {
-        recreate_path(Some(grid.target), grid);
+        grid.next_to_show = Some(grid.target);
         grid.solved = true;
     };
     let current = grid.open_set.remove(lowest);
@@ -45,11 +58,6 @@ pub fn tick(grid: &mut Grid) {
             }
         }
     }
-
-    grid.draw();
-    if grid.open_set.len() < 1 {
-        grid.solved = true;
-    }
 }
 pub fn solve(grid_ref: Rc<RefCell<Grid>>) {
     let mut grid = grid_ref.borrow_mut();
@@ -60,9 +68,6 @@ pub fn solve(grid_ref: Rc<RefCell<Grid>>) {
     main_loop(grid_ref.clone(), grid.solved);
 }
 pub fn main_loop(grid_ref: Rc<RefCell<Grid>>, solved: bool) {
-    if solved {
-        return;
-    }
     stdweb::web::set_timeout(
         move || {
             let mut grid = grid_ref.borrow_mut();
@@ -73,15 +78,15 @@ pub fn main_loop(grid_ref: Rc<RefCell<Grid>>, solved: bool) {
     );
 }
 
-fn recreate_path(previous: Option<Position>, grid: &mut Grid) {
-    match previous {
-        Some(x) => {
-            grid.grid[x.x][x.y].color = Color::get(PATH);
-            recreate_path(grid.grid[x.x][x.y].previous, grid);
-        }
-        None => return,
-    }
-}
+// fn recreate_path(previous: Option<Position>, grid: &mut Grid) {
+//     match previous {
+//         Some(x) => {
+//             grid.grid[x.x][x.y].color = Color::get(PATH);
+//             recreate_path(grid.grid[x.x][x.y].previous, grid);
+//         }
+//         None => return,
+//     }
+// }
 
 pub fn set_all_h_scores(grid: &mut Grid) {
     for row in &mut grid.grid {

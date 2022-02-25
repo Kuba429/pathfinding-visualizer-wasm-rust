@@ -19,6 +19,7 @@ pub struct Grid {
     // allow_diagonals: bool,
     pub can_modify: bool,
     pub solved: bool,
+    pub next_to_show: Option<Position>,
 }
 
 impl Grid {
@@ -80,6 +81,7 @@ impl Grid {
             open_set: Vec::new(),
             closed_set: Vec::new(),
             solved: false,
+            next_to_show: None,
         }
     }
     pub fn setup_grid(rows: &i32) -> Vec<Vec<Cell>> {
