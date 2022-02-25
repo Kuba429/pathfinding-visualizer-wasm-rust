@@ -1,5 +1,6 @@
 #[macro_use]
 extern crate stdweb;
+mod a_star;
 mod canvas;
 mod cell;
 mod color;
@@ -19,6 +20,20 @@ fn main() {
     grid.borrow_mut().draw();
 
     set_onclick(grid.clone());
+    start_listener(grid.clone());
+}
+pub fn start_listener(grid: Rc<RefCell<grid::Grid>>) {
+    let start_button = document().query_selector("#startButton").unwrap().unwrap();
+    start_button.add_event_listener({
+        move |e: ClickEvent| {
+            let mut grid = grid.borrow_mut();
+            if !grid.can_modify {
+                return;
+            }
+            grid.can_modify = false;
+            a_star::solve(&mut grid);
+        }
+    });
 }
 
 pub fn set_onclick(grid: Rc<RefCell<grid::Grid>>) {

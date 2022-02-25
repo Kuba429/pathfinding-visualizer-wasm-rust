@@ -1,10 +1,12 @@
+use crate::a_star::get_distance;
 use crate::color::Color;
 use crate::color::Color::{BLANK, GRID};
 use crate::{grid::Grid, position::Position};
 pub struct Cell {
     pub x: i32,
     pub y: i32,
-    pub g: f32,
+    pub g: i32,
+    pub h: i32,
     pub is_wall: bool,
     pub color: String,
     pub previous: Option<Box<Cell>>,
@@ -45,13 +47,21 @@ impl Cell {
         return neighbors;
     }
 }
-
+impl Cell {
+    pub fn set_h(&mut self, target: &Position) {
+        self.h = get_distance(&Position::new(self.x as usize, self.y as usize), target);
+    }
+    pub fn f(&self) -> i32 {
+        return self.g + self.h;
+    }
+}
 impl Cell {
     pub fn new(x: i32, y: i32, color: String) -> Self {
         Self {
             x,
             y,
-            g: 0.0,
+            g: 0,
+            h: 0,
             is_wall: false,
             color,
             previous: None,

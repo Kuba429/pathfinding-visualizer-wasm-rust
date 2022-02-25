@@ -12,10 +12,10 @@ pub struct Grid {
     rows: i32,
     pub cell_size: f64,
     pub grid: Vec<Vec<Cell>>,
-    start: Position,
-    target: Position,
-    // open_set: Vec<Cell>,
-    // closed_set: Vec<Cell>,
+    pub start: Position,
+    pub target: Position,
+    pub open_set: Vec<Position>,
+    pub closed_set: Vec<Position>,
     // allow_diagonals: bool,
     pub can_modify: bool,
 }
@@ -76,6 +76,8 @@ impl Grid {
             start,
             target,
             can_modify: true,
+            open_set: Vec::new(),
+            closed_set: Vec::new(),
         }
     }
     pub fn setup_grid(rows: &i32) -> Vec<Vec<Cell>> {
