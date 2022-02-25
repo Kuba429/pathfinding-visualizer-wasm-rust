@@ -39,7 +39,7 @@ pub fn tick(grid: &mut Grid) {
                 grid.grid[n.x][n.y].g = temp_g;
                 grid.grid[n.x][n.y].previous = Some(current);
                 grid.open_set.push(n);
-                if n.x != grid.target.x && n.y != grid.target.y {
+                if n.x != grid.target.x || n.y != grid.target.y {
                     grid.grid[n.x][n.y].color = Color::get(OPEN_SET);
                 }
             }
