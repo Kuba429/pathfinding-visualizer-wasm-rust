@@ -16,33 +16,32 @@ use stdweb::web::{document, FormData, FormDataEntry, IEventTarget, IParentNode};
 fn main() {
     stdweb::initialize();
     let canvas = canvas::Canvas::new();
-    let grid = Rc::new(RefCell::new(Grid::new()));
-    grid.borrow_mut().draw();
+    let grid_ref = Rc::new(RefCell::new(Grid::new()));
+    grid_ref.borrow_mut().draw();
 
-    set_onclick(grid.clone());
-    start_listener(grid.clone());
+    set_onclick(grid_ref.clone());
+    start_listener(grid_ref.clone());
 }
-pub fn start_listener(grid: Rc<RefCell<grid::Grid>>) {
+pub fn start_listener(grid_ref: Rc<RefCell<grid::Grid>>) {
     let start_button = document().query_selector("#startButton").unwrap().unwrap();
     start_button.add_event_listener({
         move |e: ClickEvent| {
-            let mut grid = grid.borrow_mut();
-            if !grid.can_modify {
+            let grid = grid_ref.clone();
+            if !grid.borrow_mut().can_modify {
                 return;
             }
-            grid.can_modify = false;
-            a_star::solve(&mut grid);
+            a_star::solve(grid);
         }
     });
 }
 
-pub fn set_onclick(grid: Rc<RefCell<grid::Grid>>) {
+pub fn set_onclick(grid_ref: Rc<RefCell<grid::Grid>>) {
     let canvas = document().query_selector("#canvas").unwrap().unwrap();
     canvas.add_event_listener({
         move |e: ClickEvent| {
             let main_form = document().query_selector("#mainForm").unwrap().unwrap();
             let form_data = FormData::from_element(&main_form).unwrap();
-            let mut grid = grid.borrow_mut();
+            let mut grid = grid_ref.borrow_mut();
             let cell_size = grid.cell_size;
             let x = (e.offset_x() / cell_size) as usize;
             let y = (e.offset_y() / cell_size) as usize;
