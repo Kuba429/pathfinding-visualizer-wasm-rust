@@ -65,10 +65,9 @@ pub fn main_loop(grid_ref: Rc<RefCell<Grid>>, solved: bool) {
     }
     stdweb::web::set_timeout(
         move || {
-            let grid_ref_clone = grid_ref.clone();
-            let mut grid = grid_ref_clone.borrow_mut();
+            let mut grid = grid_ref.borrow_mut();
             tick(&mut grid);
-            main_loop(grid_ref, grid.solved)
+            main_loop(grid_ref.clone(), grid.solved)
         },
         1,
     );
