@@ -18,12 +18,15 @@ fn main() {
     let grid = Rc::new(RefCell::new(Grid::new()));
     grid.borrow_mut().draw();
 
-    canvas.element.add_event_listener({
-        let grid = grid.clone();
+    set_onclick(grid.clone());
+}
+
+pub fn set_onclick(grid: Rc<RefCell<grid::Grid>>) {
+    let canvas = document().query_selector("#canvas").unwrap().unwrap();
+    canvas.add_event_listener({
         move |e: ClickEvent| {
             let main_form = document().query_selector("#mainForm").unwrap().unwrap();
             let form_data = FormData::from_element(&main_form).unwrap();
-
             let mut grid = grid.borrow_mut();
             let cell_size = grid.cell_size;
             let x = (e.offset_x() / cell_size) as usize;
