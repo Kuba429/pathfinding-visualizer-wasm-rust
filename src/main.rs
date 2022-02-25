@@ -41,6 +41,9 @@ pub fn set_canvas_onclick(grid_ref: Rc<RefCell<grid::Grid>>) {
             let main_form = document().query_selector("#mainForm").unwrap().unwrap();
             let form_data = FormData::from_element(&main_form).unwrap();
             let mut grid = grid_ref.borrow_mut();
+            if !grid.can_modify {
+                return;
+            };
             let cell_size = grid.cell_size;
             let x = (e.offset_x() / cell_size) as usize;
             let y = (e.offset_y() / cell_size) as usize;
