@@ -70,6 +70,11 @@ impl Grid {
             }
         }
     }
+    pub fn reset(&mut self) {
+        self.grid = Self::setup_grid(&self.rows);
+        self.stage = stage::idle;
+        self.draw();
+    }
 }
 impl Grid {
     pub fn new() -> Self {
