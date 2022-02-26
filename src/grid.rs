@@ -54,6 +54,19 @@ impl Grid {
         self.target = Position::new(x, y);
         self.grid[x][y].make_not_wall();
     }
+    pub fn fill_random_walls(&mut self) {
+        self.grid = Self::setup_grid(&self.rows);
+        for row in &mut self.grid {
+            for cell in row {
+                let mut random_number: u8 = js! {return Math.floor(Math.random()*100)}
+                    .try_into()
+                    .unwrap();
+                if random_number < 20 {
+                    cell.make_wall();
+                }
+            }
+        }
+    }
 }
 impl Grid {
     pub fn new() -> Self {

@@ -20,6 +20,7 @@ fn main() {
 
     set_canvas_onclick(grid_ref.clone());
     set_start_button_onclick(grid_ref.clone());
+    set_random_walls_onclick(grid_ref.clone());
 }
 pub fn set_start_button_onclick(grid_ref: Rc<RefCell<grid::Grid>>) {
     let start_button = document().query_selector("#startButton").unwrap().unwrap();
@@ -33,7 +34,16 @@ pub fn set_start_button_onclick(grid_ref: Rc<RefCell<grid::Grid>>) {
         }
     });
 }
-
+pub fn set_random_walls_onclick(grid_ref: Rc<RefCell<Grid>>) {
+    let button = document().query_selector("#randomWalls").unwrap().unwrap();
+    button.add_event_listener({
+        move |_e: ClickEvent| {
+            let mut grid = grid_ref.borrow_mut();
+            grid.fill_random_walls();
+            grid.draw();
+        }
+    });
+}
 pub fn set_canvas_onclick(grid_ref: Rc<RefCell<grid::Grid>>) {
     let canvas = document().query_selector("#canvas").unwrap().unwrap();
     canvas.add_event_listener({
