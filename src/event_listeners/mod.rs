@@ -9,4 +9,5 @@ pub fn set_all_listeners(grid_ref: Rc<RefCell<Grid>>) {
     button_listeners::set_random_walls_onclick(grid_ref.clone());
     button_listeners::set_reset_button_onclick(grid_ref.clone());
     canvas_listeners::set_canvas_onclick(grid_ref.clone());
+    canvas_listeners::set_canvas_wall_drawing_listener(grid_ref.clone());
 }
