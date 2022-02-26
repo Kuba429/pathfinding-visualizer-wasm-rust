@@ -1,4 +1,5 @@
 use crate::color::Color;
+use crate::grid::stage;
 use crate::{grid::Grid, position::Position};
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -6,16 +7,8 @@ use Color::{CLOSED_SET, OPEN_SET, PATH};
 // use color::CLOSED_SET;
 pub fn tick(grid: &mut Grid) {
     grid.draw();
-    if grid.solved {
-        let item = grid.next_to_show;
-        match item {
-            Some(c) => {
-                grid.grid[c.x][c.y].color = Color::get(PATH);
-                grid.draw();
-                grid.next_to_show = grid.grid[c.x][c.y].previous;
-            }
-            None => return,
-        }
+    if grid.open_set.len() < 1 {
+        grid.stage = stage::done;
         return;
     }
     let mut lowest = 0;
@@ -30,7 +23,8 @@ pub fn tick(grid: &mut Grid) {
 
     if lowest_pos.x == grid.target.x && lowest_pos.y == grid.target.y {
         grid.next_to_show = Some(grid.target);
-        grid.solved = true;
+        grid.stage = stage::drawing_path;
+        return;
     };
     let current = grid.open_set.remove(lowest);
     grid.closed_set.push(current);
@@ -58,11 +52,24 @@ pub fn tick(grid: &mut Grid) {
         }
     }
 }
+pub fn tick_path(grid: &mut Grid) {
+    let item = grid.next_to_show;
+    match item {
+        Some(c) => {
+            grid.grid[c.x][c.y].color = Color::get(PATH);
+            grid.draw();
+            grid.next_to_show = grid.grid[c.x][c.y].previous;
+        }
+        None => grid.stage = stage::done,
+    }
+}
+
 pub fn solve(grid_ref: Rc<RefCell<Grid>>) {
     let mut grid = grid_ref.borrow_mut();
     grid.can_modify = false;
     let start_point = grid.start;
     grid.open_set.push(start_point);
+    grid.stage = stage::in_progress;
     set_all_h_scores(&mut grid);
     main_loop(grid_ref.clone());
 }
@@ -70,7 +77,12 @@ pub fn main_loop(grid_ref: Rc<RefCell<Grid>>) {
     stdweb::web::set_timeout(
         move || {
             let mut grid = grid_ref.borrow_mut();
-            tick(&mut grid);
+            match &grid.stage {
+                stage::in_progress => tick(&mut grid),
+                stage::drawing_path => tick_path(&mut grid),
+                _ => return,
+            }
+            js! {console.log("loop")}
             main_loop(grid_ref.clone())
         },
         1,

@@ -18,8 +18,8 @@ pub struct Grid {
     pub closed_set: Vec<Position>,
     // allow_diagonals: bool,
     pub can_modify: bool,
-    pub solved: bool,
     pub next_to_show: Option<Position>,
+    pub stage: stage,
 }
 
 impl Grid {
@@ -58,7 +58,7 @@ impl Grid {
         self.grid = Self::setup_grid(&self.rows);
         for row in &mut self.grid {
             for cell in row {
-                let mut random_number: u8 = js! {return Math.floor(Math.random()*100)}
+                let random_number: u8 = js! {return Math.floor(Math.random()*100)}
                     .try_into()
                     .unwrap();
                 if random_number < 20 {
@@ -93,8 +93,8 @@ impl Grid {
             can_modify: true,
             open_set: Vec::new(),
             closed_set: Vec::new(),
-            solved: false,
             next_to_show: None,
+            stage: stage::idle,
         }
     }
     pub fn setup_grid(rows: &i32) -> Vec<Vec<Cell>> {
@@ -108,4 +108,11 @@ impl Grid {
 
         return grid;
     }
+}
+
+pub enum stage {
+    in_progress,
+    drawing_path,
+    done,
+    idle,
 }
