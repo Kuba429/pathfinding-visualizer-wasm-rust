@@ -46,9 +46,9 @@ pub fn set_random_walls_onclick(grid_ref: Rc<RefCell<Grid>>) {
 }
 pub fn set_canvas_onclick(grid_ref: Rc<RefCell<grid::Grid>>) {
     let canvas = document().query_selector("#canvas").unwrap().unwrap();
+    let main_form = document().query_selector("#mainForm").unwrap().unwrap();
     canvas.add_event_listener({
         move |e: ClickEvent| {
-            let main_form = document().query_selector("#mainForm").unwrap().unwrap();
             let form_data = FormData::from_element(&main_form).unwrap();
             let mut grid = grid_ref.borrow_mut();
             if !grid.can_modify {
