@@ -9,7 +9,7 @@ use crate::position::Position;
 use crate::Color::{BLANK, GRID, START, TARGET};
 pub struct Grid {
     pub canvas: Canvas,
-    rows: i32,
+    pub rows: i32,
     pub cell_size: f64,
     pub grid: Vec<Vec<Cell>>,
     pub start: Position,
@@ -74,6 +74,12 @@ impl Grid {
         self.stage = stage::idle;
         self.open_set = Vec::new();
         self.closed_set = Vec::new();
+
+        self.cell_size = self.canvas.element.width() as f64 / self.rows as f64;
+
+        self.start = Position::new(0, 0);
+        self.target = Position::new(self.grid.len() - 1, self.grid.len() - 1);
+
         self.draw();
     }
 }
