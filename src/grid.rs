@@ -58,6 +58,9 @@ impl Grid {
         self.grid = Self::setup_grid(&self.rows);
         for row in &mut self.grid {
             for cell in row {
+                if cell.is_wall {
+                    continue;
+                };
                 let random_number: u8 = js! {return Math.floor(Math.random()*100)}
                     .try_into()
                     .unwrap();
