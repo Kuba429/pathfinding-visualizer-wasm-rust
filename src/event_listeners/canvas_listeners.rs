@@ -1,4 +1,4 @@
-use crate::grid::Grid;
+use crate::grid::{stage, Grid};
 use crate::stdweb::traits::IMouseEvent;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -12,9 +12,10 @@ pub fn set_canvas_onclick(grid_ref: Rc<RefCell<Grid>>) {
         move |e: ClickEvent| {
             let form_data = FormData::from_element(&main_form).unwrap();
             let mut grid = grid_ref.borrow_mut();
-            if !grid.can_modify {
-                return;
-            };
+            match grid.stage {
+                stage::idle => (),
+                _ => return,
+            }
             let cell_size = grid.cell_size;
             let x = (e.offset_x() / cell_size) as usize;
             let y = (e.offset_y() / cell_size) as usize;

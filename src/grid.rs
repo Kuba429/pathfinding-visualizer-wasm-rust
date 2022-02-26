@@ -17,7 +17,6 @@ pub struct Grid {
     pub open_set: Vec<Position>,
     pub closed_set: Vec<Position>,
     // allow_diagonals: bool,
-    pub can_modify: bool,
     pub next_to_show: Option<Position>,
     pub stage: stage,
 }
@@ -55,7 +54,7 @@ impl Grid {
         self.grid[x][y].make_not_wall();
     }
     pub fn fill_random_walls(&mut self) {
-        self.grid = Self::setup_grid(&self.rows);
+        self.reset();
         for row in &mut self.grid {
             for cell in row {
                 if cell.x as usize == self.target.x && cell.y as usize == self.target.y {
@@ -73,6 +72,8 @@ impl Grid {
     pub fn reset(&mut self) {
         self.grid = Self::setup_grid(&self.rows);
         self.stage = stage::idle;
+        self.open_set = Vec::new();
+        self.closed_set = Vec::new();
         self.draw();
     }
 }
@@ -98,7 +99,6 @@ impl Grid {
             cell_size,
             start,
             target,
-            can_modify: true,
             open_set: Vec::new(),
             closed_set: Vec::new(),
             next_to_show: None,
@@ -118,6 +118,7 @@ impl Grid {
     }
 }
 
+#[derive(Clone, Copy)]
 pub enum stage {
     in_progress,
     drawing_path,

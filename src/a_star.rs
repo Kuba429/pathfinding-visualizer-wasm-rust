@@ -66,7 +66,6 @@ pub fn tick_path(grid: &mut Grid) {
 
 pub fn solve(grid_ref: Rc<RefCell<Grid>>) {
     let mut grid = grid_ref.borrow_mut();
-    grid.can_modify = false;
     let start_point = grid.start;
     grid.open_set.push(start_point);
     grid.stage = stage::in_progress;
