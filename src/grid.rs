@@ -69,6 +69,11 @@ impl Grid {
             }
         }
     }
+    pub fn set_diagonal(&mut self) {
+        self.allow_diagonals = js! {return document.querySelector("#diagonalsCheckbox").checked}
+            .try_into()
+            .unwrap();
+    }
     pub fn reset(&mut self) {
         self.grid = Self::setup_grid(&self.rows);
         self.stage = stage::idle;
