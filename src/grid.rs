@@ -80,6 +80,8 @@ impl Grid {
         self.start = Position::new(0, 0);
         self.target = Position::new(self.grid.len() - 1, self.grid.len() - 1);
 
+        enable_inputs();
+
         self.draw();
     }
 }
@@ -134,4 +136,12 @@ pub enum stage {
     drawing_path,
     done,
     idle,
+}
+
+pub fn enable_inputs() {
+    let input_elements: stdweb::web::NodeList = document().query_selector_all("input").unwrap();
+    for el in input_elements {
+        let input_element: html_element::InputElement = el.try_into().unwrap();
+        input_element.remove_attribute("disabled");
+    }
 }

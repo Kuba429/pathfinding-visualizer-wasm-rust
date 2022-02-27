@@ -4,8 +4,9 @@ use crate::stdweb::web::IEventTarget;
 use crate::stdweb::web::IParentNode;
 use std::cell::RefCell;
 use std::rc::Rc;
-use stdweb::web::document;
+use stdweb::unstable::TryInto;
 use stdweb::web::event::ClickEvent;
+use stdweb::web::{document, html_element, IElement};
 
 pub fn set_start_button_onclick(grid_ref: Rc<RefCell<Grid>>) {
     let start_button = document().query_selector("#startButton").unwrap().unwrap();
@@ -13,7 +14,11 @@ pub fn set_start_button_onclick(grid_ref: Rc<RefCell<Grid>>) {
         move |_e: ClickEvent| {
             let stage = grid_ref.borrow_mut().stage;
             match stage {
-                stage::idle => a_star::solve(grid_ref.clone()),
+                stage::idle => {
+                    disable_inputs();
+
+                    a_star::solve(grid_ref.clone())
+                }
                 _ => return,
             }
         }
@@ -44,4 +49,12 @@ pub fn set_random_walls_onclick(grid_ref: Rc<RefCell<Grid>>) {
             }
         }
     });
+}
+
+pub fn disable_inputs() {
+    let input_elements: stdweb::web::NodeList = document().query_selector_all("input").unwrap();
+    for el in input_elements {
+        let input_element: html_element::InputElement = el.try_into().unwrap();
+        input_element.set_attribute("disabled", "true").unwrap();
+    }
 }
