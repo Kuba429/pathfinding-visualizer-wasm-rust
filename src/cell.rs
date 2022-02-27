@@ -26,18 +26,33 @@ impl Cell {
         let y = self.y as usize;
         let mut neighbors: Vec<Position> = Vec::new();
         let mut potential_neighbors = Vec::new();
+        let last_i = grid.grid.len() - 1;
         if x > 0 {
             potential_neighbors.push(Position::new(x - 1, y));
         }
-        if x < grid.grid.len() - 1 {
+        if x < last_i {
             potential_neighbors.push(Position::new(x + 1, y))
         }
         if y > 0 {
             potential_neighbors.push(Position::new(x, y - 1))
         }
-        if y < grid.grid.len() - 1 {
+        if y < last_i {
             potential_neighbors.push(Position::new(x, y + 1))
         };
+        if grid.allow_diagonals {
+            if x > 0 && y > 0 {
+                potential_neighbors.push(Position::new(x - 1, y - 1));
+            }
+            if x > 0 && y < last_i {
+                potential_neighbors.push(Position::new(x - 1, y + 1));
+            }
+            if x < last_i && y > 0 {
+                potential_neighbors.push(Position::new(x + 1, y - 1));
+            }
+            if x < last_i && y < last_i {
+                potential_neighbors.push(Position::new(x + 1, y + 1));
+            }
+        }
 
         for i in potential_neighbors {
             if !grid.grid[i.x][i.y].is_wall {

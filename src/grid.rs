@@ -1,6 +1,6 @@
 use stdweb::traits::*;
 use stdweb::unstable::TryInto;
-use stdweb::web::document;
+use stdweb::web::{document, html_element};
 
 use crate::canvas::Canvas;
 use crate::cell::Cell;
@@ -16,7 +16,7 @@ pub struct Grid {
     pub target: Position,
     pub open_set: Vec<Position>,
     pub closed_set: Vec<Position>,
-    // allow_diagonals: bool,
+    pub allow_diagonals: bool,
     pub next_to_show: Option<Position>,
     pub stage: stage,
 }
@@ -97,7 +97,10 @@ impl Grid {
         let grid = Self::setup_grid(&rows);
         let start = Position::new(0, 0);
         let target = Position::new(grid.len() - 1, grid.len() - 1);
-
+        let mut allow_diagonals: bool =
+            js! { return document.querySelector("#diagonalsCheckbox").checked}
+                .try_into()
+                .unwrap();
         Self {
             canvas,
             rows,
@@ -105,6 +108,7 @@ impl Grid {
             cell_size,
             start,
             target,
+            allow_diagonals,
             open_set: Vec::new(),
             closed_set: Vec::new(),
             next_to_show: None,
