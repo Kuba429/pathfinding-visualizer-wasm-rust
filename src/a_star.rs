@@ -81,7 +81,6 @@ pub fn main_loop(grid_ref: Rc<RefCell<Grid>>) {
                 stage::drawing_path => tick_path(&mut grid),
                 _ => return,
             }
-            js! {console.log("loop")}
             main_loop(grid_ref.clone())
         },
         1,
