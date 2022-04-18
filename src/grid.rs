@@ -17,6 +17,7 @@ pub struct Grid {
     pub open_set: Vec<Position>,
     pub closed_set: Vec<Position>,
     pub allow_diagonals: bool,
+    pub compare_h: bool,
     pub next_to_show: Option<Position>,
     pub stage: stage,
 }
@@ -116,6 +117,7 @@ impl Grid {
             start,
             target,
             allow_diagonals,
+            compare_h: false,
             open_set: Vec::new(),
             closed_set: Vec::new(),
             next_to_show: None,

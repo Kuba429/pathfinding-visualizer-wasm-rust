@@ -18,6 +18,14 @@ pub fn tick(grid: &mut Grid) {
         if grid.grid[item.x][item.y].f() < grid.grid[lowest_pos.x][lowest_pos.y].f() {
             lowest = i;
             lowest_pos = grid.open_set[lowest];
+        } else if grid.compare_h
+            && grid.grid[item.x][item.y].f() == grid.grid[lowest_pos.x][lowest_pos.y].f()
+        {
+            // TODO implement toggle for comparing h scores
+            if grid.grid[item.x][item.y].h < grid.grid[lowest_pos.x][lowest_pos.y].h {
+                lowest = i;
+                lowest_pos = grid.open_set[lowest];
+            }
         }
     }
 
