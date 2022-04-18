@@ -12,5 +12,4 @@ pub fn set_all_listeners(grid_ref: Rc<RefCell<Grid>>) {
     canvas_listeners::set_canvas_onclick(grid_ref.clone());
     canvas_listeners::set_canvas_wall_drawing_listener(grid_ref.clone());
     input_listeners::set_size_range_oninput(grid_ref.clone());
-    input_listeners::toggle_compare_h(grid_ref.clone());
 }

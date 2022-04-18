@@ -17,6 +17,7 @@ pub fn set_start_button_onclick(grid_ref: Rc<RefCell<Grid>>) {
                 stage::idle => {
                     disable_inputs();
                     grid_ref.borrow_mut().set_diagonal();
+                    grid_ref.borrow_mut().set_comparing_h();
                     a_star::solve(grid_ref.clone())
                 }
                 _ => return,

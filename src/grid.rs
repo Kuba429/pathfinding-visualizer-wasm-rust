@@ -75,6 +75,11 @@ impl Grid {
             .try_into()
             .unwrap();
     }
+    pub fn set_comparing_h(&mut self) {
+        self.compare_h = js! {return document.querySelector("#compare-h-checkbox").checked}
+            .try_into()
+            .unwrap()
+    }
     pub fn reset(&mut self) {
         self.grid = Self::setup_grid(&self.rows);
         self.stage = stage::idle;
