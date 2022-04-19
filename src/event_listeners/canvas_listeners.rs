@@ -61,14 +61,22 @@ pub fn set_canvas_wall_drawing_listener(grid_ref: Rc<RefCell<Grid>>) {
             let form_data = FormData::from_element(&main_form).unwrap();
             let mut grid = grid_ref.borrow_mut();
             let cell_size = grid.cell_size;
-            let x = (e.offset_x() / cell_size) as usize;
-            let y = (e.offset_y() / cell_size) as usize;
+            let mut x = (e.offset_x() / cell_size) as usize;
+            let mut y = (e.offset_y() / cell_size) as usize;
             let object = form_data.get("object").unwrap();
             // all FormDataEntries
             let start_point = FormDataEntry::String("startPoint".to_string());
             let destination = FormDataEntry::String("destination".to_string());
             let wall = FormDataEntry::String("wall".to_string());
             let erase_wall = FormDataEntry::String("eraseWall".to_string());
+
+            // cap the x and y values to the grid; caused some bugs
+            if x >= grid.grid.len() {
+                x = grid.grid.len() - 1;
+            }
+            if y >= grid.grid.len() {
+                y = grid.grid.len() - 1;
+            }
 
             if object == wall {
                 grid.grid[x][y].make_wall();
