@@ -58,8 +58,12 @@ pub fn set_canvas_wall_drawing_listener(grid_ref: Rc<RefCell<Grid>>) {
             if !mouse.borrow_mut().is_down {
                 return;
             }
-            let form_data = FormData::from_element(&main_form).unwrap();
             let mut grid = grid_ref.borrow_mut();
+            match grid.stage {
+                stage::idle => (),
+                _ => return,
+            }
+            let form_data = FormData::from_element(&main_form).unwrap();
             let cell_size = grid.cell_size;
             let mut x = (e.offset_x() / cell_size) as usize;
             let mut y = (e.offset_y() / cell_size) as usize;
