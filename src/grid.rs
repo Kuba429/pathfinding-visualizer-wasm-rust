@@ -18,7 +18,7 @@ pub struct Grid {
     pub allow_diagonals: bool,
     pub compare_h: bool,
     pub next_to_show: Option<Position>,
-    pub stage: stage,
+    pub stage: Stage,
 }
 
 impl Grid {
@@ -89,7 +89,7 @@ impl Grid {
     }
     pub fn reset(&mut self) {
         self.grid = Self::setup_grid(&self.rows);
-        self.stage = stage::idle;
+        self.stage = Stage::Idle;
         self.open_set = Vec::new();
         self.closed_set = Vec::new();
 
@@ -137,7 +137,7 @@ impl Grid {
             open_set: Vec::new(),
             closed_set: Vec::new(),
             next_to_show: None,
-            stage: stage::idle,
+            stage: Stage::Idle,
         }
     }
     pub fn setup_grid(rows: &i32) -> Vec<Vec<Cell>> {
@@ -154,11 +154,11 @@ impl Grid {
 }
 
 #[derive(Clone, Copy)]
-pub enum stage {
-    in_progress,
-    drawing_path,
-    done,
-    idle,
+pub enum Stage {
+    InProgress,
+    DrawingPath,
+    Done,
+    Idle,
 }
 
 pub fn enable_inputs() {

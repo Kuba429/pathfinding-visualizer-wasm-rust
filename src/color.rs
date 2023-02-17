@@ -4,8 +4,8 @@ pub enum Color {
     START,
     TARGET,
     PATH,
-    OPEN_SET,
-    CLOSED_SET,
+    OpenSet,
+    ClosedSet,
 }
 impl Color {
     pub fn get(value: Color) -> String {
@@ -15,8 +15,8 @@ impl Color {
             Color::START => String::from("#077dff"),
             Color::TARGET => String::from("#077dff"),
             Color::PATH => String::from("#077dff"),
-            Color::OPEN_SET => String::from("#77D970"),
-            Color::CLOSED_SET => String::from("#E02401"),
+            Color::OpenSet => String::from("#77D970"),
+            Color::ClosedSet => String::from("#E02401"),
         }
     }
 }

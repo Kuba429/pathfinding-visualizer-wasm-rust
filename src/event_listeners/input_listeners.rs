@@ -1,4 +1,4 @@
-use crate::grid::{stage, Grid};
+use crate::grid::{Stage, Grid};
 use std::cell::RefCell;
 use std::rc::Rc;
 use wasm_bindgen::{prelude::Closure, JsCast};
@@ -14,7 +14,7 @@ pub fn set_size_range_oninput(grid_ref: Rc<RefCell<Grid>>) {
     let cb = Closure::<dyn FnMut(_)>::new(move |e: web_sys::InputEvent| {
         let mut grid = grid_ref.borrow_mut();
         match grid.stage {
-            stage::idle => {
+            Stage::Idle => {
                 let target: web_sys::HtmlInputElement = e.target().unwrap().dyn_into().unwrap();
                 let value: i32 = target.value().parse().unwrap();
                 grid.rows = value;

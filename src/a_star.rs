@@ -1,16 +1,16 @@
 use crate::color::Color;
-use crate::grid::stage;
+use crate::grid::Stage;
 use crate::{grid::Grid, position::Position};
 use std::cell::RefCell;
 use std::rc::Rc;
 use wasm_bindgen::prelude::Closure;
 use wasm_bindgen::JsCast;
-use Color::{CLOSED_SET, OPEN_SET, PATH};
+use Color::{ClosedSet, OpenSet, PATH};
 // use color::CLOSED_SET;
 pub fn tick(grid: &mut Grid) {
     grid.draw();
     if grid.open_set.len() < 1 {
-        grid.stage = stage::done;
+        grid.stage = Stage::Done;
         return;
     }
     let mut lowest = 0;
@@ -33,14 +33,14 @@ pub fn tick(grid: &mut Grid) {
 
     if lowest_pos.x == grid.target.x && lowest_pos.y == grid.target.y {
         grid.next_to_show = Some(grid.target);
-        grid.stage = stage::drawing_path;
+        grid.stage = Stage::DrawingPath;
         return;
     };
     let current = grid.open_set.remove(lowest);
     grid.closed_set.push(current);
 
     if current.x != grid.start.x || current.y != grid.start.y {
-        grid.grid[current.x][current.y].color = Color::get(CLOSED_SET);
+        grid.grid[current.x][current.y].color = Color::get(ClosedSet);
     }
     let current_neighbors = grid.grid[current.x][current.y].get_neighbors(grid);
     for n in current_neighbors {
@@ -56,7 +56,7 @@ pub fn tick(grid: &mut Grid) {
                 grid.grid[n.x][n.y].previous = Some(current);
                 grid.open_set.push(n);
                 if n.x != grid.target.x || n.y != grid.target.y {
-                    grid.grid[n.x][n.y].color = Color::get(OPEN_SET);
+                    grid.grid[n.x][n.y].color = Color::get(OpenSet);
                 }
             }
         }
@@ -70,7 +70,7 @@ pub fn tick_path(grid: &mut Grid) {
             grid.draw();
             grid.next_to_show = grid.grid[c.x][c.y].previous;
         }
-        None => grid.stage = stage::done,
+        None => grid.stage = Stage::Done,
     }
 }
 
@@ -78,7 +78,7 @@ pub fn solve(grid_ref: Rc<RefCell<Grid>>) {
     let mut grid = grid_ref.borrow_mut();
     let start_point = grid.start;
     grid.open_set.push(start_point);
-    grid.stage = stage::in_progress;
+    grid.stage = Stage::InProgress;
     set_all_h_scores(&mut grid);
     main_loop(grid_ref.clone());
 }
@@ -88,8 +88,8 @@ pub fn main_loop(grid_ref: Rc<RefCell<Grid>>) {
         move |_: web_sys::MouseEvent| {
             let mut grid = grid_ref.borrow_mut();
             match &grid.stage {
-                stage::in_progress => tick(&mut grid),
-                stage::drawing_path => tick_path(&mut grid),
+                Stage::InProgress => tick(&mut grid),
+                Stage::DrawingPath => tick_path(&mut grid),
                 _ => return,
             }
             main_loop(grid_ref.clone())
