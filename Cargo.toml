@@ -24,5 +24,6 @@ features = [
 	'CanvasRenderingContext2d',
 	'FormData',
 	'HtmlFormElement',
-	'MouseEvent'
+	'MouseEvent',
+	'InputEvent'
 ]
