@@ -49,6 +49,7 @@ pub fn set_random_walls_onclick(grid_ref: Rc<RefCell<Grid>>) {
         }
     });
     button.add_event_listener_with_callback("click", cb.as_ref().unchecked_ref());
+    cb.forget();
 }
 
 pub fn disable_inputs() {

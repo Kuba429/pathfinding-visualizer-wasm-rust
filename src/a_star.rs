@@ -3,6 +3,8 @@ use crate::grid::stage;
 use crate::{grid::Grid, position::Position};
 use std::cell::RefCell;
 use std::rc::Rc;
+use wasm_bindgen::prelude::Closure;
+use wasm_bindgen::JsCast;
 use Color::{CLOSED_SET, OPEN_SET, PATH};
 // use color::CLOSED_SET;
 pub fn tick(grid: &mut Grid) {
@@ -81,8 +83,9 @@ pub fn solve(grid_ref: Rc<RefCell<Grid>>) {
     main_loop(grid_ref.clone());
 }
 pub fn main_loop(grid_ref: Rc<RefCell<Grid>>) {
-    stdweb::web::set_timeout(
-        move || {
+    let cb = Closure::<dyn FnMut(_)>::new({
+        let grid_ref = grid_ref.clone();
+        move |_: web_sys::MouseEvent| {
             let mut grid = grid_ref.borrow_mut();
             match &grid.stage {
                 stage::in_progress => tick(&mut grid),
@@ -90,9 +93,13 @@ pub fn main_loop(grid_ref: Rc<RefCell<Grid>>) {
                 _ => return,
             }
             main_loop(grid_ref.clone())
-        },
-        1,
-    );
+        }
+    });
+    web_sys::window()
+        .unwrap()
+        .request_animation_frame(cb.as_ref().unchecked_ref())
+        .unwrap();
+    cb.forget();
 }
 
 pub fn set_all_h_scores(grid: &mut Grid) {

@@ -1,5 +1,3 @@
-#[macro_use]
-extern crate stdweb;
 mod a_star;
 mod canvas;
 mod cell;
@@ -13,7 +11,6 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 fn main() {
-    stdweb::initialize();
     let grid_ref = Rc::new(RefCell::new(Grid::new()));
     grid_ref.borrow_mut().draw();
 

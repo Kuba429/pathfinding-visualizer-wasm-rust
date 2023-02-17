@@ -1,95 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <title>Pathfinding algorithm visualizer</title>
-        <link rel="icon" href="/favicon.ico" />
-        <link rel="stylesheet" href="style.css" />
-        <!-- font -->
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Roboto&display=swap"
-            rel="stylesheet"
-        />
-    </head>
-    <body>
-        <div class="container">
-            <div class="controls">
-                <div class="buttons">
-                    <button id="startButton">Start</button>
-                    <button id="resetButton">Reset</button>
-                    <button id="randomWalls">Random Obsticles</button>
-                </div>
-                <form id="mainForm">
-                    <div class="inputWrapper">
-                        <label for="gridSizeRange">Grid Size</label>
-                        <input
-                            type="range"
-                            min="5"
-                            max="70"
-                            value="15"
-                            name="gridSize"
-                            id="gridSizeRange"
-                        />
-                    </div>
-                    <div class="inputWrapper">
-                        <label for="compare-h-checkbox">Compare H-Scores</label>
-                        <input type="checkbox" id="compare-h-checkbox" />
-                    </div>
-                    <div class="inputWrapper">
-                        <label for="startRadio">Start point</label>
-                        <input
-                            type="radio"
-                            value="startPoint"
-                            name="object"
-                            id="startRadio"
-                        />
-                    </div>
-                    <div class="inputWrapper">
-                        <label for="destinationRadio">Destination</label>
-                        <input
-                            type="radio"
-                            value="destination"
-                            name="object"
-                            id="destinationRadio"
-                        />
-                    </div>
-                    <div class="inputWrapper">
-                        <label for="wallRadio">Wall</label>
-                        <input
-                            checked
-                            type="radio"
-                            value="wall"
-                            name="object"
-                            id="wallRadio"
-                        />
-                    </div>
+	<head>
+		<meta charset="UTF-8" />
+		<title>Pathfinding algorithm visualizer</title>
+		<link data-trunk rel="icon" href="./static/favicon.ico" />
+		<link data-trunk rel="scss" href="./static/style.scss" />
+		<!-- font -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Roboto&display=swap"
+			rel="stylesheet"
+		/>
+	</head>
+	<body>
+		<div class="container">
+			<div class="controls">
+				<div class="buttons">
+					<button id="startButton">Start</button>
+					<button id="resetButton">Reset</button>
+					<button id="randomWalls">Random Obsticles</button>
+				</div>
+				<form id="mainForm">
+					<div class="inputWrapper">
+						<label for="gridSizeRange">Grid Size</label>
+						<input
+							type="range"
+							min="5"
+							max="70"
+							value="15"
+							name="gridSize"
+							id="gridSizeRange"
+						/>
+					</div>
+					<div class="inputWrapper">
+						<label for="compare-h-checkbox">Compare H-Scores</label>
+						<input type="checkbox" id="compare-h-checkbox" />
+					</div>
+					<div class="inputWrapper">
+						<label for="startRadio">Start point</label>
+						<input
+							type="radio"
+							value="startPoint"
+							name="object"
+							id="startRadio"
+						/>
+					</div>
+					<div class="inputWrapper">
+						<label for="destinationRadio">Destination</label>
+						<input
+							type="radio"
+							value="destination"
+							name="object"
+							id="destinationRadio"
+						/>
+					</div>
+					<div class="inputWrapper">
+						<label for="wallRadio">Wall</label>
+						<input
+							checked
+							type="radio"
+							value="wall"
+							name="object"
+							id="wallRadio"
+						/>
+					</div>
 
-                    <div class="inputWrapper">
-                        <label for="wallRadio">Erase wall</label>
-                        <input
-                            type="radio"
-                            value="eraseWall"
-                            name="object"
-                            id="eraseWallRadio"
-                        />
-                    </div>
-                    <div class="inputWrapper">
-                        <label for="diagonalsCheckbox"
-                            >Allow diagonal movement</label
-                        >
-                        <input
-                            type="checkbox"
-                            name="diagonals"
-                            id="diagonalsCheckbox"
-                        />
-                    </div>
-                </form>
-            </div>
-            <canvas id="canvas" width="500" height="500"></canvas>
-        </div>
-
-        <script src="/wasm-pathfinding.js"></script>
-    </body>
+					<div class="inputWrapper">
+						<label for="wallRadio">Erase wall</label>
+						<input
+							type="radio"
+							value="eraseWall"
+							name="object"
+							id="eraseWallRadio"
+						/>
+					</div>
+					<div class="inputWrapper">
+						<label for="diagonalsCheckbox"
+							>Allow diagonal movement</label
+						>
+						<input
+							type="checkbox"
+							name="diagonals"
+							id="diagonalsCheckbox"
+						/>
+					</div>
+				</form>
+			</div>
+			<canvas id="canvas" width="500" height="500"></canvas>
+		</div>
+	</body>
 </html>

@@ -7,7 +7,6 @@ edition = "2021"
 
 [dependencies]
 js-sys = "0.3.61"
-stdweb = "0.4.20"
 wasm-bindgen = "0.2.84"
 
 [dependencies.web-sys]
@@ -25,5 +24,6 @@ features = [
 	'FormData',
 	'HtmlFormElement',
 	'MouseEvent',
-	'InputEvent'
+	'InputEvent',
+	'console'
 ]
