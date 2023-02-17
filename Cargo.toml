@@ -21,5 +21,6 @@ features = [
 	'Window',
 	'HtmlInputElement',
 	'HtmlCanvasElement',
-	'CanvasRenderingContext2d'
+	'CanvasRenderingContext2d',
+	'MouseEvent'
 ]
