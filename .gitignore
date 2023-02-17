@@ -1,3 +1,11 @@
 /target
 .DS_Store
 static/style.css.map
+dist
+
+
+# Added by cargo
+#
+# already existing elements were commented out
+
+#/target

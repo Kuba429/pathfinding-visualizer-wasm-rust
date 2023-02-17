@@ -1,6 +1,5 @@
-use stdweb::traits::*;
-use stdweb::unstable::TryInto;
-use stdweb::web::{document, html_element};
+use js_sys::Math;
+use wasm_bindgen::JsCast;
 
 use crate::canvas::Canvas;
 use crate::cell::Cell;
@@ -61,9 +60,7 @@ impl Grid {
                 if cell.x as usize == self.target.x && cell.y as usize == self.target.y {
                     continue;
                 };
-                let random_number: u8 = js! {return Math.floor(Math.random()*100)}
-                    .try_into()
-                    .unwrap();
+                let random_number: u8 = (Math::random() * 100.0).floor() as u8;
                 if random_number < 20 {
                     cell.make_wall();
                 }
@@ -71,14 +68,24 @@ impl Grid {
         }
     }
     pub fn set_diagonal(&mut self) {
-        self.allow_diagonals = js! {return document.querySelector("#diagonalsCheckbox").checked}
-            .try_into()
-            .unwrap();
+        let doc = web_sys::window().unwrap().document().unwrap();
+        self.allow_diagonals = doc
+            .query_selector("#diagonalsCheckbox")
+            .unwrap()
+            .unwrap()
+            .dyn_into::<web_sys::HtmlInputElement>()
+            .unwrap()
+            .checked();
     }
     pub fn set_comparing_h(&mut self) {
-        self.compare_h = js! {return document.querySelector("#compare-h-checkbox").checked}
-            .try_into()
+        let doc = web_sys::window().unwrap().document().unwrap();
+        self.compare_h = doc
+            .query_selector("#compare-h-checkbox")
             .unwrap()
+            .unwrap()
+            .dyn_into::<web_sys::HtmlInputElement>()
+            .unwrap()
+            .checked();
     }
     pub fn reset(&mut self) {
         self.grid = Self::setup_grid(&self.rows);
@@ -98,22 +105,26 @@ impl Grid {
 }
 impl Grid {
     pub fn new() -> Self {
-        let grid_size_range: stdweb::web::html_element::InputElement = document()
+        let doc = web_sys::window().unwrap().document().unwrap();
+        let grid_size_range: web_sys::HtmlInputElement = doc
             .query_selector("#gridSizeRange")
             .unwrap()
             .unwrap()
-            .try_into()
+            .dyn_into()
             .unwrap();
-        let rows: i32 = grid_size_range.raw_value().parse().unwrap();
+        let rows: i32 = grid_size_range.value().parse().unwrap();
         let canvas = Canvas::new();
         let cell_size: f64 = canvas.element.width() as f64 / rows as f64;
         let grid = Self::setup_grid(&rows);
         let start = Position::new(0, 0);
         let target = Position::new(grid.len() - 1, grid.len() - 1);
-        let mut allow_diagonals: bool =
-            js! { return document.querySelector("#diagonalsCheckbox").checked}
-                .try_into()
-                .unwrap();
+        let allow_diagonals = doc
+            .query_selector("#diagonalsCheckbox")
+            .unwrap()
+            .unwrap()
+            .dyn_into::<web_sys::HtmlInputElement>()
+            .unwrap()
+            .checked();
         Self {
             canvas,
             rows,
@@ -151,9 +162,11 @@ pub enum stage {
 }
 
 pub fn enable_inputs() {
-    let input_elements: stdweb::web::NodeList = document().query_selector_all("input").unwrap();
-    for el in input_elements {
-        let input_element: html_element::InputElement = el.try_into().unwrap();
-        input_element.remove_attribute("disabled");
+    let doc = web_sys::window().unwrap().document().unwrap();
+    let input_elements: web_sys::NodeList = doc.query_selector_all("input").unwrap();
+    for el in 0..input_elements.length() {
+        let input_element: web_sys::HtmlInputElement =
+            input_elements.item(el).unwrap().dyn_into().unwrap();
+        input_element.remove_attribute("disabled").unwrap();
     }
 }
