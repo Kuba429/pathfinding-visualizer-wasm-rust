@@ -1,60 +1,80 @@
 use crate::grid::{stage, Grid};
-use crate::stdweb::traits::IMouseEvent;
 use std::cell::RefCell;
 use std::rc::Rc;
-use stdweb::web::event::ClickEvent;
-use stdweb::web::{document, FormData, FormDataEntry, IEventTarget, IParentNode};
+use wasm_bindgen::prelude::Closure;
+use wasm_bindgen::JsCast;
 
 pub fn set_canvas_onclick(grid_ref: Rc<RefCell<Grid>>) {
-    let canvas = document().query_selector("#canvas").unwrap().unwrap();
-    let main_form = document().query_selector("#mainForm").unwrap().unwrap();
-    canvas.add_event_listener({
-        move |e: ClickEvent| {
-            let form_data = FormData::from_element(&main_form).unwrap();
-            let mut grid = grid_ref.borrow_mut();
-            match grid.stage {
-                stage::idle => (),
-                _ => return,
-            }
-            let cell_size = grid.cell_size;
-            let x = (e.offset_x() / cell_size) as usize;
-            let y = (e.offset_y() / cell_size) as usize;
-            let object = form_data.get("object").unwrap();
-            // all FormDataEntries
-            let start_point = FormDataEntry::String("startPoint".to_string());
-            let destination = FormDataEntry::String("destination".to_string());
-            let wall = FormDataEntry::String("wall".to_string());
-            let erase_wall = FormDataEntry::String("eraseWall".to_string());
+    let doc = web_sys::window().unwrap().document().unwrap();
+    let canvas: web_sys::HtmlCanvasElement = doc
+        .query_selector("#canvas")
+        .unwrap()
+        .unwrap()
+        .dyn_into()
+        .unwrap();
+    let main_form: web_sys::HtmlFormElement = doc
+        .query_selector("#mainForm")
+        .unwrap()
+        .unwrap()
+        .dyn_into()
+        .unwrap();
 
-            if object == wall {
-                grid.grid[x][y].make_wall();
-            } else if object == erase_wall {
-                grid.grid[x][y].make_not_wall();
-            } else if object == start_point {
-                grid.make_new_start(x, y);
-            } else if object == destination {
-                grid.make_new_target(x, y);
-            }
-            grid.draw();
+    let cb = Closure::<dyn FnMut(_)>::new(move |e: web_sys::MouseEvent| {
+        let form_data = web_sys::FormData::new_with_form(&main_form).unwrap();
+        let mut grid = grid_ref.borrow_mut();
+        match grid.stage {
+            stage::idle => (),
+            _ => return,
         }
+        let cell_size = grid.cell_size;
+        let x = (e.offset_x() / cell_size as i32) as usize;
+        let y = (e.offset_y() / cell_size as i32) as usize;
+        let object = form_data.get("object").as_string().unwrap();
+
+        if object == "wall" {
+            grid.grid[x][y].make_wall();
+        } else if object == "eraseWall" {
+            grid.grid[x][y].make_not_wall();
+        } else if object == "startPoint" {
+            grid.make_new_start(x, y);
+        } else if object == "destination" {
+            grid.make_new_target(x, y);
+        }
+        grid.draw();
     });
+    canvas.add_event_listener_with_callback("click", cb.as_ref().unchecked_ref());
+    cb.forget();
 }
 
 pub fn set_canvas_wall_drawing_listener(grid_ref: Rc<RefCell<Grid>>) {
-    let canvas = document().query_selector("#canvas").unwrap().unwrap();
-    let main_form = document().query_selector("#mainForm").unwrap().unwrap();
+    let doc = web_sys::window().unwrap().document().unwrap();
+    let canvas = doc.query_selector("#canvas").unwrap().unwrap();
+    let main_form: web_sys::HtmlFormElement = doc
+        .query_selector("#mainForm")
+        .unwrap()
+        .unwrap()
+        .dyn_into()
+        .unwrap();
     let mut mouse = Rc::new(RefCell::new(MouseState { is_down: false }));
-    document().add_event_listener({
+    {
         let mouse = mouse.clone();
-        move |_e: stdweb::web::event::MouseDownEvent| mouse.borrow_mut().set_state(true)
-    });
-    document().add_event_listener({
+        let cb = Closure::<dyn FnMut(_)>::new(move |e: web_sys::MouseEvent| {
+            mouse.borrow_mut().set_state(true)
+        });
+        doc.add_event_listener_with_callback("mousedown", cb.as_ref().unchecked_ref());
+        cb.forget();
+    }
+    {
         let mouse = mouse.clone();
-        move |_e: stdweb::web::event::MouseUpEvent| mouse.borrow_mut().set_state(false)
-    });
-    canvas.add_event_listener({
+        let cb = Closure::<dyn FnMut(_)>::new(move |e: web_sys::MouseEvent| {
+            mouse.borrow_mut().set_state(false)
+        });
+        doc.add_event_listener_with_callback("mouseup", cb.as_ref().unchecked_ref());
+        cb.forget();
+    }
+    {
         let mouse = mouse.clone();
-        move |e: stdweb::web::event::MouseMoveEvent| {
+        let cb = Closure::<dyn FnMut(_)>::new(move |e: web_sys::MouseEvent| {
             if !mouse.borrow_mut().is_down {
                 return;
             }
@@ -63,16 +83,11 @@ pub fn set_canvas_wall_drawing_listener(grid_ref: Rc<RefCell<Grid>>) {
                 stage::idle => (),
                 _ => return,
             }
-            let form_data = FormData::from_element(&main_form).unwrap();
+            let form_data = web_sys::FormData::new_with_form(&main_form).unwrap();
             let cell_size = grid.cell_size;
-            let mut x = (e.offset_x() / cell_size) as usize;
-            let mut y = (e.offset_y() / cell_size) as usize;
-            let object = form_data.get("object").unwrap();
-            // all FormDataEntries
-            let start_point = FormDataEntry::String("startPoint".to_string());
-            let destination = FormDataEntry::String("destination".to_string());
-            let wall = FormDataEntry::String("wall".to_string());
-            let erase_wall = FormDataEntry::String("eraseWall".to_string());
+            let mut x = (e.offset_x() / cell_size as i32) as usize;
+            let mut y = (e.offset_y() / cell_size as i32) as usize;
+            let object = form_data.get("object").as_string().unwrap();
 
             // cap the x and y values to the grid; caused some bugs
             if x >= grid.grid.len() {
@@ -81,19 +96,21 @@ pub fn set_canvas_wall_drawing_listener(grid_ref: Rc<RefCell<Grid>>) {
             if y >= grid.grid.len() {
                 y = grid.grid.len() - 1;
             }
-
-            if object == wall {
+            // TODO check if this is ok
+            if object == "wall" {
                 grid.grid[x][y].make_wall();
-            } else if object == erase_wall {
+            } else if object == "eraseWall" {
                 grid.grid[x][y].make_not_wall();
-            } else if object == start_point {
+            } else if object == "startPoint" {
                 grid.make_new_start(x, y);
-            } else if object == destination {
+            } else if object == "destination" {
                 grid.make_new_target(x, y);
             }
             grid.draw();
-        }
-    });
+        });
+        doc.add_event_listener_with_callback("mousemove", cb.as_ref().unchecked_ref());
+        cb.forget();
+    }
 }
 struct MouseState {
     pub is_down: bool,
