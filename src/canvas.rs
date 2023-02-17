@@ -1,11 +1,7 @@
-use crate::stdweb::unstable::TryInto;
-use stdweb::traits::*;
-use stdweb::web::{document, html_element};
+use wasm_bindgen::{JsCast, JsValue};
 pub struct Canvas {
-    pub element: html_element::CanvasElement,
-    pub ctx: stdweb::web::CanvasRenderingContext2d,
-    // pub width: i32,
-    // pub height: u32,
+    pub element: web_sys::HtmlCanvasElement,
+    pub ctx: web_sys::CanvasRenderingContext2d,
 }
 impl Canvas {
     pub fn clear(&self, color: &str) {
@@ -15,7 +11,7 @@ impl Canvas {
             self.element.width() as f64,
             self.element.height() as f64,
         );
-        self.ctx.set_fill_style_color(color);
+        self.ctx.set_fill_style(&JsValue::from_str(color));
         self.ctx.fill_rect(
             0.0,
             0.0,
@@ -24,25 +20,26 @@ impl Canvas {
         )
     }
     pub fn draw(&self, x: f64, y: f64, width: f64, height: f64, color: &String) {
-        self.ctx.set_fill_style_color(&color);
+        self.ctx.set_fill_style(&JsValue::from_str(color));
         self.ctx.fill_rect(x, y, width, height);
     }
 }
 // methods that don't take "self"
 impl Canvas {
     pub fn new() -> Canvas {
-        let element: html_element::CanvasElement = document()
+        let doc = web_sys::window().unwrap().document().unwrap();
+        let element: web_sys::HtmlCanvasElement = doc
             .query_selector("#canvas")
             .unwrap()
             .unwrap()
-            .try_into()
+            .dyn_into()
             .unwrap();
-        let ctx = element.get_context().unwrap();
-        Canvas {
-            element,
-            ctx,
-            // width: i32::from(&element.width()),
-            // height: &element.height(),
-        }
+        let ctx: web_sys::CanvasRenderingContext2d = element
+            .get_context("2d")
+            .unwrap()
+            .unwrap()
+            .dyn_into()
+            .unwrap();
+        Canvas { element, ctx }
     }
 }
